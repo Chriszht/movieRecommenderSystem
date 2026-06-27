@@ -1,0 +1,14 @@
+participant_id,order,condition,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,comment_like,comment_improve
+
+P01,AB,A,2,1,2,2,2,4,2,2,"Simple interface, easy to rate movies quickly","I can't save my information, and next time I need rank one more time"
+P03,AB,A,2,2,3,3,4,5,3,3,Fast page load and minimal clutter,
+P05,AB,A,3,2,3,2,3,5,2,1,The Liked section makes it easy to revisit chosen movies,idk
+P01,AB,B,4,3,4,3,4,4,4,4,very pro,no need change
+P03,AB,B,5,5,3,3,4,5,5,5,very good! it can match most of my interest,add account sign in
+P05,AB,B,4,2,4,3,4,4,4,3,Diversity slider gives me control over how varied the list feels.,
+P02,BA,B,4,3,4,4,4,5,4,5,"The ""Why?"" explanation made the recommendations feel trustworthy.",
+P04,BA,B,4,3,4,4,4,3,4,5,"It gives me ""your taste"" which make me know what type and decade I especially like.",Not very simple to use.
+P06,BA,B,4,3,4,4,3,3,3,3,Recommendations felt more personalised after a few likes,
+P02,BA,A,3,4,3,3,2,4,2,2,a very simple website...,I can't give an accurate ranking for some movies I haven't watched.
+P04,BA,A,3,4,3,2,2,4,3,3,very diverse,diversity too high
+P06,BA,A,3,3,3,3,2,4,3,2,,suggest to add an unlike function.

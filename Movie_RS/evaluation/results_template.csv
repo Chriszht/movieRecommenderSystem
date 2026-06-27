@@ -1,0 +1,5 @@
+participant_id,order,condition,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,comment_like,comment_improve
+P01,AB,A,3,2,2,2,3,4,3,3,"Simple UI","Want explanations"
+P01,AB,B,4,4,5,5,4,4,5,4,"Explanations help","Slider could be clearer"
+P02,BA,B,4,4,4,4,4,4,4,4,"",""
+P02,BA,A,3,3,2,2,2,4,3,3,"",""

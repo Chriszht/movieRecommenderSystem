@@ -1,0 +1,70 @@
+GOOGLE FORM — ready-to-paste items
+===================================
+
+Paste each block into Google Forms (or Qualtrics) one-by-one.
+Use "Linear scale" (1–5) for Q1–Q8 and "Long answer" for Q9–Q10.
+
+---
+
+FORM TITLE
+Movie Recommender — A/B Evaluation (COMP4135)
+
+FORM DESCRIPTION
+Thanks for helping us evaluate our group-project recommender system.
+This questionnaire takes about 3 minutes per condition. All answers
+are anonymous. Please fill it in twice — once after you have used
+condition A (Original) and once after condition B (Enhanced).
+
+---
+
+SECTION 1 — identification
+(use "Short answer" type, mark as required)
+
+1. Participant ID (given by the team, e.g. P01)
+2. Condition you just used            [multiple choice: A (Original) / B (Enhanced)]
+3. Was this your first or second try? [multiple choice: First / Second]
+
+---
+
+SECTION 2 — Likert (1 = strongly disagree, 5 = strongly agree)
+(use "Linear scale" 1–5 for every item)
+
+Q1. The recommended movies match my taste.
+Q2. The list of recommendations is diverse enough.
+Q3. I discovered movies I had not seen or considered before.
+Q4. I understood why each movie was recommended to me.
+Q5. I felt in control of the recommendations (via feedback / diversity slider).
+Q6. The interface was easy to use.
+Q7. Overall, I am satisfied with the recommendations.
+Q8. I trust the system's recommendations.
+
+---
+
+SECTION 3 — Open questions
+(use "Paragraph" type, not required)
+
+Q9. What did you like most about this version?
+Q10. What would you change or improve?
+
+---
+
+EXPORTING TO results.csv
+========================
+
+After collecting responses, File → Download → CSV. The Google Form
+CSV will look something like:
+
+    Timestamp, Participant ID, Condition, ..., Q1, Q2, ...
+
+Rename / reorder the columns to match `results_template.csv`:
+
+    participant_id,order,condition,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,comment_like,comment_improve
+
+- `order` values: "AB" if the participant had A first, "BA" otherwise.
+- `condition` values: `A` or `B`.
+
+Then save as `evaluation/results.csv` and run:
+
+    python evaluation/analyze_results.py evaluation/results.csv \
+        --out evaluation/results_summary.csv \
+        --figures-dir report/figures

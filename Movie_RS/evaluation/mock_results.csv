@@ -1,0 +1,13 @@
+participant_id,order,condition,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,comment_like,comment_improve
+P01,AB,A,3,2,2,2,3,4,3,3,"Simple","Want reasons"
+P01,AB,B,4,4,5,5,4,4,5,4,"Explanations help","Slider clearer"
+P02,BA,A,3,3,2,2,2,4,3,3,"Clean","Need search"
+P02,BA,B,4,5,4,4,5,4,4,4,"Diversity slider",""
+P03,AB,A,4,3,3,2,2,4,3,4,"",""
+P03,AB,B,5,4,5,5,5,5,5,5,"Why popups great","More genres"
+P04,BA,A,2,2,3,1,2,3,2,3,"",""
+P04,BA,B,4,5,4,4,4,4,4,4,"Liked search","Slower loads"
+P05,AB,A,3,3,2,3,3,4,3,3,"",""
+P05,AB,B,5,5,4,5,4,5,5,4,"Feedback diary",""
+P06,BA,A,3,2,2,2,3,3,3,3,"",""
+P06,BA,B,4,4,5,4,4,4,5,4,"Explanations","More posters"

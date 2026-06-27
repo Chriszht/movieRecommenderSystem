@@ -1,0 +1,248 @@
+{# Genre picker, movie detail, explanation, and feedback diary modals. #}
+
+{# --- Genre picker --- #}
+<div :class="['modal', showGenres ? 'is-active' : '']">
+    <div class="modal-background" @click="showGenres = false"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Choose the genres you like</p>
+            <button class="delete" @click="showGenres = false"></button>
+        </header>
+        <div class="modal-card-body">
+            <p class="mb-3">Multiple answers allowed.</p>
+            {% for gener in genres %}
+            <button :class="['button m-2', inGenres({{gener['id']}}) ? 'is-link' : '' ]"
+                    @click="updateGenre({{gener['id']}})">{{gener['name']}}</button>
+            {% endfor %}
+        </div>
+        <footer class="modal-card-foot">
+            <button class="button is-link" :disabled="genres.length == 0"
+                    @click="saveGenres">Save</button>
+        </footer>
+    </div>
+</div>
+
+{# --- Movie detail modal --- #}
+<div :class="['modal', detailMovie ? 'is-active' : '']">
+    <div class="modal-background" @click="detailMovie = null"></div>
+    <div class="modal-card" style="max-width:780px" v-if="detailMovie">
+        <header class="modal-card-head">
+            <p class="modal-card-title">[[ detailMovie.title ]]
+                <span class="tag is-light ml-2">[[ detailMovie.release_date ]]</span>
+            </p>
+            <button class="delete" @click="detailMovie = null"></button>
+        </header>
+        <div class="modal-card-body">
+            <div class="columns">
+                <div class="column is-one-third">
+                    <figure class="image is-3by4">
+                        <img :src="detailMovie.cover_url"
+                             onerror="this.src='https://placehold.co/480x640?text=No+Cover';">
+                    </figure>
+                </div>
+                <div class="column">
+                    <p class="mb-2">
+                        <span class="tag is-info mr-1" v-for="g in detailMovie.genres || []">[[ g ]]</span>
+                    </p>
+                    <p class="is-size-6">[[ detailMovie.overview || 'No overview available.' ]]</p>
+                    <div v-if="detailExplanation && detailExplanation.text" class="notification is-warning is-light mt-3">
+                        <p class="has-text-weight-semibold">
+                            <i class="fa fa-lightbulb-o mr-1"></i>Why this was recommended
+                        </p>
+                        <p class="is-size-7">[[ detailExplanation.text ]]</p>
+                        <p class="is-size-7 mt-2" v-if="detailExplanation.similar_to && detailExplanation.similar_to.length">
+                            <strong>Most similar to you-rated:</strong>
+                            <span v-for="s in detailExplanation.similar_to">
+                                [[ s.title ]] ([[ Math.round(s.similarity*100) ]]%)&nbsp;
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="modal-card-foot">
+            <button class="button is-success" @click="updateLike(detailMovie.movieId); detailMovie = null">
+                <i class="fa fa-thumbs-up mr-1"></i>Like
+            </button>
+            <button class="button is-danger is-light" @click="updateDislike(detailMovie.movieId); detailMovie = null">
+                <i class="fa fa-thumbs-down mr-1"></i>Not interested
+            </button>
+            <button class="button" @click="detailMovie = null">Close</button>
+        </footer>
+    </div>
+</div>
+
+{# --- Explanation popover modal --- #}
+<div :class="['modal', explainMovie ? 'is-active' : '']">
+    <div class="modal-background" @click="explainMovie = null"></div>
+    <div class="modal-content" style="max-width:500px" v-if="explainMovie">
+        <div class="box">
+            <p class="title is-5">
+                <i class="fa fa-lightbulb-o has-text-warning mr-2"></i>Why we recommend "[[ explainMovie.title ]]"
+            </p>
+            <p class="mb-2">[[ explainMovie.text ]]</p>
+            <div v-if="explainMovie.similar_to && explainMovie.similar_to.length">
+                <p class="has-text-weight-semibold mt-3">Most similar to you-rated/liked:</p>
+                <ul>
+                    <li v-for="s in explainMovie.similar_to">
+                        [[ s.title ]] &mdash; similarity [[ Math.round(s.similarity*100) ]]%
+                    </li>
+                </ul>
+            </div>
+            <div v-if="explainMovie.shared_genres && explainMovie.shared_genres.length">
+                <p class="has-text-weight-semibold mt-3">Shared genres:</p>
+                <p><span class="tag is-info mr-1" v-for="g in explainMovie.shared_genres">[[ g ]]</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# --- Feedback diary side drawer --- #}
+<div :class="['modal', showDiary ? 'is-active' : '']">
+    <div class="modal-background" @click="showDiary = false"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title"><i class="fa fa-bookmark mr-2"></i>Your feedback so far</p>
+            <button class="delete" @click="showDiary = false"></button>
+        </header>
+        <div class="modal-card-body">
+            <p class="has-text-grey mb-3">
+                Every like or dislike you leave is fed back into the recommender.
+                Hit <em>Refresh</em> to regenerate the list using your latest feedback.
+            </p>
+            <div class="columns">
+                <div class="column">
+                    <p class="has-text-weight-bold has-text-success">
+                        <i class="fa fa-thumbs-up mr-1"></i>Liked ([[ userLikes.length ]])
+                    </p>
+                    <ul class="is-size-7">
+                        <li v-for="t in likedTitles">• [[ t ]]</li>
+                        <li v-if="!userLikes.length" class="has-text-grey">None yet.</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <p class="has-text-weight-bold has-text-danger">
+                        <i class="fa fa-thumbs-down mr-1"></i>Disliked ([[ userDislikes.length ]])
+                    </p>
+                    <ul class="is-size-7">
+                        <li v-for="t in dislikedTitles">• [[ t ]]</li>
+                        <li v-if="!userDislikes.length" class="has-text-grey">None yet.</li>
+                    </ul>
+                </div>
+                <div class="column">
+                    <p class="has-text-weight-bold has-text-link">
+                        <i class="fa fa-bookmark mr-1"></i>Haven't seen ([[ interestTitles.length ]])
+                    </p>
+                    <ul class="is-size-7">
+                        <li v-for="t in interestTitles">
+                            <span v-if="t.status === 'int'" class="has-text-link">●</span>
+                            <span v-else-if="t.status === 'not'" class="has-text-danger">●</span>
+                            <span v-else class="has-text-grey">●</span>
+                            [[ t.title ]]
+                        </li>
+                        <li v-if="!interestTitles.length" class="has-text-grey">None yet.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <footer class="modal-card-foot">
+            <button class="button is-link" @click="reloadPage">
+                <i class="fa fa-refresh mr-1"></i>Refresh recommendations
+            </button>
+            <button class="button" @click="showDiary = false">Close</button>
+        </footer>
+    </div>
+</div>
+
+{# --- "Haven't seen" interest picker --- #}
+<div :class="['modal', interestMovie ? 'is-active' : '']">
+    <div class="modal-background" @click="interestMovie = null"></div>
+    <div class="modal-card" style="max-width:500px" v-if="interestMovie">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Haven't seen it?</p>
+            <button class="delete" @click="interestMovie = null"></button>
+        </header>
+        <div class="modal-card-body">
+            <p class="mb-3">
+                <strong>[[ interestMovie.title ]]</strong>
+                <span class="tag is-light ml-2">[[ interestMovie.release_date ]]</span>
+            </p>
+            <p class="is-size-7 has-text-grey mb-3">
+                Tell us whether this kind of movie sounds like something
+                you'd watch. We'll use it to shape recommendations without
+                treating it as a real rating.
+            </p>
+            <div class="buttons">
+                <button class="button is-link"
+                        @click="setInterest(interestMovie.movieId, 'int')">
+                    <i class="fa fa-bookmark mr-2"></i>Sounds interesting
+                </button>
+                <button class="button is-danger is-light"
+                        @click="setInterest(interestMovie.movieId, 'not')">
+                    <i class="fa fa-ban mr-2"></i>Not interested
+                </button>
+                <button class="button"
+                        @click="setInterest(interestMovie.movieId, 'skip')">
+                    <i class="fa fa-forward mr-2"></i>Skip
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# --- Your Taste dashboard --- #}
+<div :class="['modal', showTaste ? 'is-active' : '']">
+    <div class="modal-background" @click="showTaste = false"></div>
+    <div class="modal-card" style="max-width:820px">
+        <header class="modal-card-head">
+            <p class="modal-card-title">
+                <i class="fa fa-pie-chart mr-2"></i>Your Taste
+                <span class="tag is-info is-light ml-2" v-if="profileId">
+                    [[ profileId ]]
+                </span>
+            </p>
+            <button class="delete" @click="showTaste = false"></button>
+        </header>
+        <div class="modal-card-body">
+            <template v-if="tasteStats">
+                <div class="columns is-size-7 mb-3">
+                    <div class="column">
+                        <p><strong>Rated:</strong> [[ tasteStats.totals.rated ]]</p>
+                    </div>
+                    <div class="column">
+                        <p><strong>Liked:</strong> [[ tasteStats.totals.liked ]]</p>
+                    </div>
+                    <div class="column">
+                        <p><strong>Interested:</strong> [[ tasteStats.totals.interested ]]</p>
+                    </div>
+                </div>
+                <div class="columns">
+                    <div class="column is-half">
+                        <p class="has-text-weight-semibold mb-2">Genre preference</p>
+                        <canvas id="tasteRadar" height="260"></canvas>
+                    </div>
+                    <div class="column is-half">
+                        <p class="has-text-weight-semibold mb-2">Release decade</p>
+                        <canvas id="tasteDecade" height="260"></canvas>
+                    </div>
+                </div>
+                <p class="has-text-weight-semibold mt-3 mb-2">Top keywords in titles you favour</p>
+                <div v-if="tasteStats.top_keywords && tasteStats.top_keywords.length">
+                    <span class="tag is-link is-light mr-2 mb-1"
+                          v-for="w in tasteStats.top_keywords">
+                        [[ w.word ]]
+                    </span>
+                </div>
+                <p v-else class="has-text-grey is-size-7">
+                    Rate or like a few movies to see your taste keywords.
+                </p>
+            </template>
+            <template v-else>
+                <p class="has-text-grey">Loading…</p>
+            </template>
+        </div>
+        <footer class="modal-card-foot">
+            <button class="button" @click="showTaste = false">Close</button>
+        </footer>
+    </div>
+</div>

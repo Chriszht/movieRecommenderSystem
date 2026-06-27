@@ -1,0 +1,72 @@
+/* Custom styles for the enhanced Movie Recommender UI. */
+
+.modal-card {
+    width: calc(100% - 4em);
+    max-width: 900px;
+}
+
+.card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: transform .15s, box-shadow .15s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(10, 10, 10, 0.12);
+}
+
+.card img {
+    object-fit: cover;
+}
+
+.card-footer {
+    margin-top: auto;
+}
+
+.card.mini .card-content {
+    min-height: 3.4em;
+}
+
+.movie-card .card-image {
+    position: relative;
+}
+
+.movie-card .why-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.stars {
+    margin-top: 4px;
+}
+
+.stars .fa-star {
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: #dbdbdb;
+    margin-right: 2px;
+}
+
+.stars .fa-star.checked {
+    color: #f5a623;
+}
+
+.checked {
+    color: #f5a623;
+}
+
+/* Make navbar search/diversity inputs breathe a bit more. */
+input[type="range"] {
+    vertical-align: middle;
+    width: 110px;
+}
+
+/* Responsive tweaks. */
+@media screen and (max-width: 768px) {
+    .navbar-end .buttons { flex-wrap: wrap; }
+}

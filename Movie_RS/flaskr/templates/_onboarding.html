@@ -1,0 +1,107 @@
+{# Landing state: either the user has not chosen genres yet, or they
+   still need to rate at least 10 movies. #}
+<section class="section">
+    <div class="container">
+        <div class="notification is-link is-light">
+            <p class="subtitle is-5">
+                <i class="fa fa-rocket mr-2"></i>Welcome! Tell us what you like to get personalised recommendations.
+            </p>
+            <progress class="progress is-link"
+                      :value="onboardingProgress" max="10">[[ onboardingProgress ]]/10</progress>
+            <p class="has-text-grey">
+                Step 1 — Pick favourite genres &nbsp;&middot;&nbsp;
+                Step 2 — Rate or mark at least 10 movies ([[ onboardingProgress ]]/10)
+                &nbsp;&middot;&nbsp; Step 3 — We generate recommendations.
+            </p>
+        </div>
+
+        {% if genres %}
+        <div class="box">
+            <p class="is-size-5 mb-2"><i class="fa fa-search mr-2"></i>Search any movie you love</p>
+            <div class="field has-addons">
+                <div class="control is-expanded">
+                    <input class="input" type="text" v-model="searchQuery"
+                           @input="doSearch" placeholder="e.g. Toy Story, Inception, Avatar…">
+                </div>
+            </div>
+            <div class="columns is-multiline mt-2" v-if="searchResults.length">
+                <div class="column is-3" v-for="m in searchResults" :key="m.movieId">
+                    <div class="card mini">
+                        <div class="card-image"><figure class="image is-3by4">
+                            <img :src="m.cover_url"
+                                 onerror="this.src='https://placehold.co/480x640?text=No+Cover';">
+                        </figure></div>
+                        <div class="card-content p-2">
+                            <p class="is-size-7 has-text-weight-bold">[[ m.title ]]</p>
+                            <p class="is-size-7 has-text-grey">[[ m.release_date ]]</p>
+                            <div class="stars">
+                                <span v-for="r in 5" :class="['fa fa-star',
+                                      getRate(m.movieId)[1] >= r ? 'checked' : '']"
+                                      @click="updateRate(m.movieId, r)"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if default_genres_movies %}
+        <div class="box">
+            <p class="is-size-5 mb-2">
+                <i class="fa fa-film mr-2"></i>Popular in your chosen genres
+            </p>
+            <p class="has-text-grey is-size-7 mb-3">
+                Rate with stars if you have seen it, or use the
+                <strong>Haven't seen</strong> button to still tell us whether
+                it sounds interesting. Either action counts toward the 10.
+            </p>
+            <div class="columns is-multiline">
+                {% for movie in default_genres_movies %}
+                <div class="column is-3-desktop is-4-tablet is-6-mobile">
+                    <div class="card mini">
+                        <div class="card-image"
+                             @click="openDetail({{ movie['movieId'] }})"
+                             style="cursor:pointer">
+                            <figure class="image is-3by4">
+                                <img src="{{ movie['cover_url'] }}"
+                                     onerror="this.src='https://placehold.co/480x640?text=No+Cover';">
+                            </figure>
+                        </div>
+                        <div class="card-content p-2">
+                            <p class="is-size-7 has-text-weight-bold">{{ movie['title'] }}</p>
+                            <p class="is-size-7 has-text-grey">{{ movie['release_date'] }}</p>
+                            <div class="stars">
+                                <span v-for="r in 5"
+                                      :class="['fa fa-star',
+                                      getRate({{ movie['movieId'] }})[1] >= r ? 'checked': '']"
+                                      @click="updateRate({{ movie['movieId'] }}, r)"></span>
+                            </div>
+                            <button class="button is-small is-fullwidth mt-2 is-size-7"
+                                    :class="interestOf({{ movie['movieId'] }}) === 'int' ? 'is-link is-light'
+                                          : interestOf({{ movie['movieId'] }}) === 'not' ? 'is-danger is-light'
+                                          : interestOf({{ movie['movieId'] }}) === 'skip' ? 'is-light'
+                                          : ''"
+                                    @click.stop="openInterest({{ movie['movieId'] }})">
+                                <span v-if="interestOf({{ movie['movieId'] }}) === 'int'">
+                                    <i class="fa fa-bookmark mr-1"></i>Interested
+                                </span>
+                                <span v-else-if="interestOf({{ movie['movieId'] }}) === 'not'">
+                                    <i class="fa fa-ban mr-1"></i>Not interested
+                                </span>
+                                <span v-else-if="interestOf({{ movie['movieId'] }}) === 'skip'">
+                                    <i class="fa fa-forward mr-1"></i>Skipped
+                                </span>
+                                <span v-else>
+                                    <i class="fa fa-question-circle mr-1"></i>Haven't seen
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
